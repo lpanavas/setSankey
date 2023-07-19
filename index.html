@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sankey Diagram Example</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://unpkg.com/d3-sankey@0.12.3"></script>
+  </head>
+  <body>
+    <div id="sankey"></div>
+    <script type="module">
+      import { createSankey } from "./sankey.js";
+      const model1 = "yolos-tiny";
+      const model2 = "yolos-base";
+      const threshold = 0.5;
+
+      // Load the JSON file
+      d3.json("oneImageDict.json").then((dictionary) => {
+        createSankey(model1, model2, dictionary, threshold);
+      });
+    </script>
+  </body>
+</html>

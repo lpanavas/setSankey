@@ -1,0 +1,84 @@
+The end results of all of this is a sankey diagram showing how model 1's detections change when compared to model 2
+We take in two models as input and the dictionary
+input (model 1, model 2, dictionary, threshold)
+
+
+the nodes are set up like this
+const data = {
+  nodes: [
+    { name: "TP1" },
+    { name: "FP1" },
+    { name: "FN1" },
+    { name: "TP2" },
+    { name: "FP2" },
+    { name: "FN2" },
+  ],
+  links: [
+    { source: 0, target: 3, value: 100, data: dictionary },
+    { source: 1, target: 4, value: 15, data: dictionary },
+    { source: 1, target: 3, value: 15, data: dictionary }, // FP1 to TP2
+    { source: 2, target: 5, value: 30, data: dictionary },
+    { source: 2, target: 3, value: 20, data: dictionary }, // FN1 to TP2
+  ],
+};
+
+We should assume that it is all connected. 
+I want to change the value so it is a dictionary. When people click on the link they load that dictionary up.
+The value is the length of the dictionary. The dictionary is comprised of detections as specified by the input dictionary.
+
+
+We need to find which detections change from one model to the other. Specifically do any false positives disappear in model 2 or become true positives. 
+Same with False negatives. From model one to model 2 are any of the ground truths now found.
+Do True positives become false positives or false negatives?
+The opposite can be the case as well. The model could get worse.
+
+
+
+
+Let's do the easy stuff first.
+To start we want to see which detections stay the same. Particularly we'll start by looking at TP, FP staying the same
+This is where the detections overlap. 
+We can find this by looking at keys in the dictionary that have both model names present. The model names are seperated by commas
+If both models are present in that key we go through each detection
+Let's first focus only on TP and FP. 
+If the iouGT >= threshold - this will go to the link TP -> TP
+if it less than then it is FP->FP
+we want to put this information in a dictionary that will go into the data part of the link.
+
+
+Now we need to see about the FN detections
+Can you include a way to ensure that false negatives that are found in both models is added to the link
+The way the false negatives are structured is different
+To see all the false negatives of one model you would need to parse all the detections dictionaries where the model name is in the key
+The false negatives for that model are then the false negatives that are present in every single one of the dictionaries where the model name is in the key
+
+
+Now the important part. We need to find the changes:
+Get all detections from model 1 
+Get all detections from model 2 
+This should be one dictionary for each model, Image name is the key, then we have keys for TP, FP, FN  - let's call them model1Dict and model2Dict
+There may be duplicates of FN. We need to ensure that there are no FN's that are duplicates in the dictionary
+
+To start we can work with the 
+
+
+
+
+
+
+
+
+Now for each image we start with model 1
+We will start with the FP detections
+A false positive can become a true positive if:
+    the IOU becomes higher with the ground truth
+
+A false positive remains a false positive if it is already matched with that algorithm.
+    In our dictionary this is already the case. If in the key both models are present then they are making 
+
+
+
+
+
+
+Please let me know if there is a better way to do this than the one I have illustrated. More efficient or more accurate. 
